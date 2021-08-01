@@ -44,7 +44,7 @@ producer/<product_id>/products - GET. Получить все продукты �
   Проект в сентри, для логирования ошибок
 
 * `GOOGLE_DOCS_DOCUMENT_URL`  
-  **Default:** ``  
+  **Default:** `https://drive.google.com/u/0/uc?id=1X9ze_7q1oVjDia4trRnd9ZZkq5P2ymhY&export=download`  
   Ссылка на google-таблицу csv с данными для синхронизации
 
 * `BROKER_URL`  
