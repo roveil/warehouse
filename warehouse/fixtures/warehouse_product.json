@@ -1,0 +1,35 @@
+[
+  {
+    "model": "warehouse.Product",
+    "pk": "0285b967-aaaa-aaaa-dddd-5c797ac7c0a2",
+    "fields": {
+      "name": "Unit test product",
+      "photo_url": "http://unittest.com/test.png",
+      "bar_code": "V8822",
+      "price": 300,
+      "producer": 100500
+    }
+  },
+  {
+    "model": "warehouse.Product",
+    "pk": "0285b967-bbbb-aaaa-dddd-5c797ac7c0a2",
+    "fields": {
+      "name": "Unit test product2",
+      "photo_url": "http://unittest.com/test2.png",
+      "bar_code": "V8823",
+      "price": 500,
+      "producer": 100500
+    }
+  },
+  {
+    "model": "warehouse.Product",
+    "pk": "0285b967-cccc-aaaa-dddd-5c797ac7c0a2",
+    "fields": {
+      "name": "Unit test product3",
+      "photo_url": "http://unittest.com/test3.png",
+      "bar_code": "V8824",
+      "price": 700,
+      "producer": 100500
+    }
+  }
+]

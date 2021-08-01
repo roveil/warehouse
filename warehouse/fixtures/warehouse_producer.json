@@ -1,0 +1,9 @@
+[
+  {
+    "model": "warehouse.Producer",
+    "pk": 100500,
+    "fields": {
+      "name": "unexisting producer"
+    }
+  }
+]

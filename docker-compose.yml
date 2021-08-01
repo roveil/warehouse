@@ -1,0 +1,102 @@
+version: '3.7'
+
+x-application: &application
+  env_file:
+    - .env
+  deploy:
+    resources:
+      limits:
+        cpus: "1"
+        memory: 512M
+    restart_policy:
+      condition: any
+  networks:
+    - net
+
+x-services: &services
+  deploy:
+    resources:
+      limits:
+        cpus: "1"
+        memory: 512M
+    restart_policy:
+      condition: any
+  networks:
+    - net
+
+
+services:
+  base:
+    build:
+      context: .
+      args:
+        APP_NAME: "${APP_NAME}"
+      dockerfile: Dockerfile
+      cache_from:
+        - local/${APP_NAME:-app}
+
+    image: local/${APP_NAME:-app}:latest
+
+  app:
+    <<: *application
+    image: local/${APP_NAME:-app}:latest
+    environment:
+      APP_TYPE: "gunicorn"
+    ports:
+      - "${APP_HTTP_PORT}:${APP_HTTP_PORT}/tcp"
+    command:
+      - sh
+      - -c
+      - |
+        /app/src/manage.py migrate;
+        /app/src/docker-entrypoint.sh
+    depends_on:
+      - base
+      - mq
+      - db
+
+  worker-beat:
+    <<: *application
+    image: local/${APP_NAME:-app}:latest
+    environment:
+      APP_TYPE: "celery"
+      CELERY_TYPE: "beat"
+    depends_on:
+      - base
+      - mq
+      - db
+      - app
+
+  worker:
+    <<: *application
+    image: local/${APP_NAME:-app}:latest
+    environment:
+      APP_TYPE: "celery"
+      CELERY_TYPE: "worker"
+    depends_on:
+      - base
+      - mq
+      - db
+      - app
+
+  db:
+    <<: *services
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - 5432/tcp
+
+  mq:
+    <<: *services
+    image: rabbitmq:3.9.1-alpine
+    ports:
+      - 5672/tcp
+
+networks:
+  net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-warehouse

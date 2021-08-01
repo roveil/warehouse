@@ -1,0 +1,15 @@
+.idea/
+static/*
+*egg-info*
+*/__pycache__/*
+
+
+*.log
+*.pot
+*.pyc
+*.session
+*.egg
+*local_settings.py
+*.sqlite3
+*celerybeat*
+.DS_Store
