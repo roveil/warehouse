@@ -8,19 +8,17 @@ services:
   - postgresql
   - rabbitmq
 
-addons:
-  postgresql: "11"
-  apt:
-    packages:
-    - postgresql-11
-    - postgresql-client-11
-
 python:
   - 3.6
   - 3.8
 
 env:
-  - DB_NAME=warehouse DB_USER=warehouse_user DB_PASSWORD=warehouse_password DB_HOST=db
+  - PGUSER=postgres
+  - PGPORT=5432
+  - DB_NAME=warehouse
+  - DB_USER=warehouse_user
+  - DB_PASSWORD=warehouse_password
+  - DB_HOST=db
 
 before_install:
   # increase /var/ramfs size
