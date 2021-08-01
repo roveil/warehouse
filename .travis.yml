@@ -23,8 +23,10 @@ before_install:
 install:
   - pip install --upgrade pip
   - pip install -r requirements.txt
+  - sudo systemctl restart postgresql@9.6-main
 
 before_script:
+  - psql -tc 'SHOW server_version'
   - psql -c 'CREATE ROLE warehouse_user;'
   - psql -c 'ALTER ROLE warehouse_user WITH SUPERUSER;'
   - psql -c 'ALTER ROLE warehouse_user WITH LOGIN;'
