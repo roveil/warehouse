@@ -3,7 +3,6 @@ sudo: required
 language: python
 cache:
   pip: true
-  apt: true
 
 services:
   - postgresql
@@ -23,15 +22,14 @@ before_install:
 install:
   - pip install --upgrade pip
   - pip install -r requirements.txt
-  - sudo systemctl restart postgresql@9.6-main
 
 before_script:
-  - psql -tc 'SHOW server_version'
-  - psql -c 'CREATE ROLE warehouse_user;'
-  - psql -c 'ALTER ROLE warehouse_user WITH SUPERUSER;'
-  - psql -c 'ALTER ROLE warehouse_user WITH LOGIN;'
-  - psql -c "ALTER ROLE warehouse_user PASSWORD 'warehouse_pass';"
-  - psql -c 'CREATE DATABASE warehouse_db OWNER warehouse_user;'
+  - psql -tc 'SHOW server_version' -U postgres
+  - psql -c 'CREATE ROLE warehouse_user;' -U postgres
+  - psql -c 'ALTER ROLE warehouse_user WITH SUPERUSER;' -U postgres
+  - psql -c 'ALTER ROLE warehouse_user WITH LOGIN;' -U postgres
+  - psql -c "ALTER ROLE warehouse_user PASSWORD 'warehouse_pass';" -U postgres
+  - psql -c 'CREATE DATABASE warehouse_db OWNER warehouse_user;' -U postgres
 
 script:
   python runtests.py

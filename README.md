@@ -32,7 +32,7 @@ producer/<product_id>/products - GET. Получить все продукты �
   **Default:** `False`  
     
 * `ACCESS_TOKEN`  
-  **Default:** ``  
+  **Default:** `'not-secret-token`  
   Токен доступа для запросов по API
   
 * `CELERY_QUEUE`
