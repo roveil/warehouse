@@ -48,7 +48,7 @@ def _process_sync_product_data(csv_data: CSVSyncInterface) -> None:
         if updated_product_ids:
             Product.objects.exclude(id__in=updated_product_ids).delete()
             Producer.objects.exclude(id__in=Product.objects.filter(producer__isnull=False)
-                                     .values_list('producer_id', flat=True)).delete()
+                                     .values_list('producer_id', flat=True).distinct()).delete()
 
 
 def sync_failed_critical_handler(*_, **__):

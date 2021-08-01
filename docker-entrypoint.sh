@@ -22,11 +22,13 @@ echo HOME: $HOME
 
 if [[ "$APP_TYPE" == "celery" ]]; then
    if [[ "${CELERY_TYPE}" == 'worker' ]]; then
-      celery -A warehouse_main ${CELERY_TYPE} -l ${APP_LOG_LEVEL} --pool prefork --concurrency ${APP_CELERY_WORKERS} -Q ${CELERY_QUEUE} -n ${CELERY_NAME} -Ofair --max-memory-per-child=${MAX_MEMORY_PER_CHILD}
+      celery -A warehouse_main ${CELERY_TYPE} -l ${APP_LOG_LEVEL} --pool prefork --concurrency ${APP_CELERY_WORKERS} \
+      -Q ${CELERY_QUEUE} -n ${CELERY_NAME} -Ofair --max-memory-per-child=${MAX_MEMORY_PER_CHILD}
    fi
    
    if [[ "${CELERY_TYPE}" == 'beat' ]]; then
-      celery -A warehouse_main ${CELERY_TYPE} -l ${APP_LOG_LEVEL} -s ${CELERY_SCHEDULE_DB} --pidfile ${CELERY_BEAT_PID_FILE}
+      celery -A warehouse_main ${CELERY_TYPE} -l ${APP_LOG_LEVEL} -s ${CELERY_SCHEDULE_DB} \
+      --pidfile ${CELERY_BEAT_PID_FILE}
    fi
 fi
 

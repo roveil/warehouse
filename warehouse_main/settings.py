@@ -83,7 +83,9 @@ STATSD_PORT = os.environ.get('STATSD_PORT', 8125)
 STATSD_PREFIX = os.environ.get('STATSD_PREFIX', None)
 
 # Url где находится CSV
-GOOGLE_DOCS_DOCUMENT_URL = os.environ.get('GOOGLE_DOCS_DOCUMENT_URL', '')
+GOOGLE_DOCS_DOCUMENT_URL = os.environ.get('GOOGLE_DOCS_DOCUMENT_URL', 
+                                          'https://drive.google.com/u/0/uc?id=1X9ze_7q1oVjDia4trRnd9ZZkq5P2ymhY'
+                                          '&export=download')
 
 # Настройка sentry
 SENTRY_SDK_DSN_URL = os.environ.get('SENTRY_SDK_DSN_URL', '')

@@ -1,0 +1,35 @@
+dist: focal
+sudo: required
+language: python
+cache:
+  pip: true
+
+services:
+  - postgresql
+  - rabbitmq
+
+python:
+  - 3.6
+  - 3.8
+
+env:
+  - DB_NAME=warehouse DB_USER=warehouse_user DB_PASSWORD=warehouse_password DB_HOST=localhost
+before_install:
+  # increase /var/ramfs size
+  - sudo mount -o remount,size=50% /var/ramfs
+
+install:
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+  - sudo systemctl restart postgresql
+
+before_script:
+  - psql -tc 'SHOW server_version' -U postgres
+  - psql -c 'CREATE ROLE warehouse_user;' -U postgres
+  - psql -c 'ALTER ROLE warehouse_user WITH SUPERUSER;' -U postgres
+  - psql -c 'ALTER ROLE warehouse_user WITH LOGIN;' -U postgres
+  - psql -c "ALTER ROLE warehouse_user PASSWORD 'warehouse_pass';" -U postgres
+  - psql -c 'CREATE DATABASE warehouse_db OWNER warehouse_user;' -U postgres
+
+script:
+  python runtests.py
