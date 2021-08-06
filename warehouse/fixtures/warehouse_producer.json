@@ -3,7 +3,8 @@
     "model": "warehouse.Producer",
     "pk": 100500,
     "fields": {
-      "name": "unexisting producer"
+      "name": "unexisting producer",
+      "updated": "2017-01-01 00:00:00+00:00"
     }
   }
 ]

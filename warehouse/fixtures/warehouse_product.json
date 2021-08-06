@@ -7,7 +7,8 @@
       "photo_url": "http://unittest.com/test.png",
       "bar_code": "V8822",
       "price": 300,
-      "producer": 100500
+      "producer": 100500,
+      "updated": "2017-01-01 00:00:00+00:00"
     }
   },
   {
@@ -18,7 +19,8 @@
       "photo_url": "http://unittest.com/test2.png",
       "bar_code": "V8823",
       "price": 500,
-      "producer": 100500
+      "producer": 100500,
+      "updated": "2017-01-01 00:00:00+00:00"
     }
   },
   {
@@ -29,7 +31,8 @@
       "photo_url": "http://unittest.com/test3.png",
       "bar_code": "V8824",
       "price": 700,
-      "producer": 100500
+      "producer": 100500,
+      "updated": "2017-01-01 00:00:00+00:00"
     }
   }
 ]

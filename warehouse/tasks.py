@@ -4,6 +4,7 @@ from requests.exceptions import RequestException
 from celery import shared_task
 from django.conf import settings
 from django.db import transaction
+from django.utils.timezone import now
 from statsd.defaults.django import statsd
 
 from warehouse.csv_source_interface import CSVSyncInterface
@@ -17,38 +18,36 @@ def _process_sync_product_data(csv_data: CSVSyncInterface) -> None:
     :return: None
     """
     products_to_update = {}
-    producers_to_create = set()
+    producers_to_update = set()
     new_product_producer = {}
+    task_time = now()
 
-    with transaction.atomic():
-        existing_producers = dict(Producer.objects.select_for_update().values_list('name', 'id'))
+    for batch in csv_data.get_product_batches():
+        with transaction.atomic():
+            for product_pk, product_info, producer_name in batch:
+                product_info['updated'] = task_time
+                producers_to_update.add(producer_name)
+                products_to_update[product_pk] = product_info
 
-        for product_pk, product_info, producer_name in csv_data.get_products():
-
-            if producer_name in existing_producers:
-                product_info['producer_id'] = existing_producers[producer_name]
-            elif producer_name:
-                producers_to_create.add(producer_name)
-                new_product_producer[product_pk] = producer_name
-
-            product_info['producer_id'] = None
-            products_to_update[product_pk] = product_info
-
-        producers_to_create = [{'name': producer_name} for producer_name in producers_to_create]
-
-        if producers_to_create:
-            producer_dict = dict(Producer.objects.pg_bulk_create(producers_to_create,
-                                                                 returning=['name', 'id']).values_list('name', 'id'))
+            producers_updates = [{
+                "name": producer_name,
+                "updated": task_time
+            } for producer_name in producers_to_update]
+            updated_producers = dict(Producer.objects.pg_bulk_update_or_create(producers_updates, key_fields="name",
+                                                                               returning=('name', 'id'))
+                                     .values_list('name', 'id'))
+    
             for product_pk, producer_name in new_product_producer.items():
-                products_to_update[product_pk]['producer_id'] = producer_dict[producer_name]
-
-        updated_product_ids = list(Product.objects.pg_bulk_update_or_create(products_to_update, returning=['id'])
-                                   .values_list('id', flat=True))
-
-        if updated_product_ids:
-            Product.objects.exclude(id__in=updated_product_ids).delete()
-            Producer.objects.exclude(id__in=Product.objects.filter(producer__isnull=False)
-                                     .values_list('producer_id', flat=True).distinct()).delete()
+                products_to_update[product_pk]['producer_id'] = updated_producers[producer_name]
+    
+            Product.objects.pg_bulk_update_or_create(products_to_update)
+        
+        products_to_update.clear()
+        producers_to_update.clear()
+        new_product_producer.clear()
+        
+    Product.objects.filter(updated__lt=task_time).delete()
+    Producer.objects.filter(updated__lt=task_time).delete()
 
 
 def sync_failed_critical_handler(*_, **__):
