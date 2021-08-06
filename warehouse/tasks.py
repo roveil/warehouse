@@ -19,15 +19,20 @@ def _process_sync_product_data(csv_data: CSVSyncInterface) -> None:
     """
     products_to_update = {}
     producers_to_update = set()
-    new_product_producer = {}
+    product_producer = {}
     task_time = now()
 
     for batch in csv_data.get_product_batches():
         with transaction.atomic():
             for product_pk, product_info, producer_name in batch:
                 product_info['updated'] = task_time
-                producers_to_update.add(producer_name)
                 products_to_update[product_pk] = product_info
+
+                if producer_name:
+                    producers_to_update.add(producer_name)
+                    product_producer[product_pk] = producer_name
+                else:
+                    products_to_update[product_pk]['producer_id'] = None
 
             producers_updates = [{
                 "name": producer_name,
@@ -37,14 +42,14 @@ def _process_sync_product_data(csv_data: CSVSyncInterface) -> None:
                                                                                returning=('name', 'id'))
                                      .values_list('name', 'id'))
     
-            for product_pk, producer_name in new_product_producer.items():
+            for product_pk, producer_name in product_producer.items():
                 products_to_update[product_pk]['producer_id'] = updated_producers[producer_name]
     
             Product.objects.pg_bulk_update_or_create(products_to_update)
         
         products_to_update.clear()
         producers_to_update.clear()
-        new_product_producer.clear()
+        product_producer.clear()
         
     Product.objects.filter(updated__lt=task_time).delete()
     Producer.objects.filter(updated__lt=task_time).delete()
