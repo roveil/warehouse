@@ -84,7 +84,7 @@ STATSD_PREFIX = os.environ.get('STATSD_PREFIX', None)
 
 # Url где находится CSV
 GOOGLE_DOCS_DOCUMENT_URL = os.environ.get('GOOGLE_DOCS_DOCUMENT_URL', 
-                                          'https://drive.google.com/u/0/uc?id=1X9ze_7q1oVjDia4trRnd9ZZkq5P2ymhY'
+                                          'https://drive.google.com/u/0/uc?id=1jU7X9hScbJZEXcZzz4felythA-MaSAcY'
                                           '&export=download')
 
 # Настройка sentry

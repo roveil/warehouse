@@ -1,9 +1,22 @@
+from abc import ABC, abstractmethod
 from csv import DictReader
 from more_itertools import ichunked
 from typing import Iterator, Iterable, Tuple
 
 
-class CSVSyncInterface:
+class SourceInterface(ABC):
+
+    @abstractmethod
+    def get_product_batches(self) -> Iterator[Iterable[Tuple[str, dict, str]]]:
+        """
+        Возвращает генератор из батчей таплов для более удобной работы с данными 
+        :return: генератор из батчей таплов 
+        (первичный ключ продукта, словарь с информацией о продукте, имя производителя)
+        """
+        pass
+
+
+class CSVSyncInterface(SourceInterface):
 
     def __init__(self, csv_content: Iterable[str], pk_header: str, name_header: str, photo_url_header: str,
                  bar_code_header: str, price_header: str, producer_header: str, batch_size: int = 100) -> None:
